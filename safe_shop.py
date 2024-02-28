@@ -107,4 +107,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-Basta copiar e colar esses códigos em arquivos separados dentro de uma pasta para arquivá-los. Certifique-se de que os arquivos tenham a extensão correta de acordo com a linguagem de programação utilizada (.py para Python).
+
