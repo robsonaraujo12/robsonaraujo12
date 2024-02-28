@@ -1,0 +1,240 @@
+import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+void main() {
+  runApp(SafeShopApp());
+}
+
+class SafeShopApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'SafeShop App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: LoginPage(),
+    );
+  }
+}
+
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  TextEditingController _usernameController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Login'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: _usernameController,
+              decoration: InputDecoration(labelText: 'Username'),
+            ),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: InputDecoration(labelText: 'Password'),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                _login(_usernameController.text, _passwordController.text);
+              },
+              child: Text('Login'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _login(String username, String password) async {
+    // Implementação do login de usuário
+    // Você pode integrar com um sistema de autenticação como Firebase Auth ou implementar sua própria lógica de autenticação
+    // Por enquanto, vamos apenas navegar para a HomePage
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => HomePage()),
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('SafeShop'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Bem-vindo ao SafeShop!',
+              style: TextStyle(fontSize: 24.0),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                _verifySite('https://example.com');
+              },
+              child: Text('Verificar Site'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _analyzeOffers();
+              },
+              child: Text('Analisar Ofertas'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _evaluateSeller();
+              },
+              child: Text('Avaliar Vendedor'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _comparePrices();
+              },
+              child: Text('Comparar Preços'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _showFraudAlert();
+              },
+              child: Text('Alertas de Fraude'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _verifySite(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Erro'),
+            content: Text('Não foi possível abrir o site.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  void _analyzeOffers() {
+    // Implementação da análise de ofertas
+    // Você pode integrar com APIs de comparação de preços ou desenvolver sua própria lógica de análise
+    // Exiba os resultados da análise para o usuário
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Analisar Ofertas'),
+          content: Text('Aqui estão as ofertas disponíveis.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _evaluateSeller() {
+    // Implementação da avaliação do vendedor
+    // Você pode integrar com APIs de reputação de vendedores ou desenvolver sua própria lógica de avaliação
+    // Exiba os resultados da avaliação para o usuário
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Avaliar Vendedor'),
+          content: Text('Aqui está a avaliação do vendedor.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _comparePrices() {
+    // Implementação da comparação de preços
+    // Você pode integrar com APIs de comparação de preços ou desenvolver sua própria lógica de comparação
+    // Exiba os resultados da comparação para o usuário
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Comparar Preços'),
+          content: Text('Aqui estão os preços comparados.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showFraudAlert() {
+    // Implementação dos alertas de fraude
+    // Realize a detecção de fraudes e exiba alertas para o usuário se uma possível fraude for detectada
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Alerta de Fraude'),
+          content: Text('Possível fraude detectada.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
