@@ -1,0 +1,470 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+void main() {
+  runApp(SafeShopApp());
+}
+
+class SafeShopApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'SafeShop App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: Colors.white,
+      ),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        AppLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('en', 'US'),
+        const Locale('pt', 'BR'),
+        const Locale('zh', 'CN'),
+        const Locale('es', 'ES'),
+        const Locale('hi', 'IN'),
+        const Locale('ru', 'RU'),
+        const Locale('nl', 'NL'),
+        const Locale('de', 'DE'),
+        const Locale('fr', 'FR'),
+        const Locale('it', 'IT'),
+        const Locale('ja', 'JP'),
+        const Locale('ko', 'KR'),
+        const Locale('he', 'IL'),
+        const Locale('ar', 'AR'),
+      ],
+      home: LoginPage(),
+    );
+  }
+}
+
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  TextEditingController _usernameController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  LoginController _loginController = LoginController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context).getTranslatedValue('login')),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: _usernameController,
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context).getTranslatedValue('username'),
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context).getTranslatedValue('password'),
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                _login();
+              },
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue,
+                textStyle: TextStyle(color: Colors.white),
+                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 16),
+              ),
+              child: Text(AppLocalizations.of(context).getTranslatedValue('login')),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _login() async {
+    String username = _sanitizeInput(_usernameController.text);
+    String password = _sanitizeInput(_passwordController.text);
+
+    bool loggedIn = await _loginController.loginUser(username, password);
+
+    if (loggedIn) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(AppLocalizations.of(context).getTranslatedValue('loginError')),
+            content: Text(AppLocalizations.of(context).getTranslatedValue('invalidCredentials')),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  String _sanitizeInput(String input) {
+    return input; // Implementar lógica de sanitização de entrada aqui
+  }
+}
+
+class LoginController {
+  Future<bool> loginUser(String username, String password) async {
+    try {
+      bool loggedIn = await ApiClient.login(username, password);
+
+      if (loggedIn) {
+        await SecureStorage.saveCredentials(username, password);
+      }
+
+      return loggedIn;
+    } catch (e) {
+      print('Erro de autenticação: $e');
+      return false;
+    }
+  }
+}
+
+class SecureStorage {
+  static final _storage = FlutterSecureStorage();
+
+  static const _keyUsername = 'username';
+  static const _keyPassword = 'password';
+
+  static Future<void> saveCredentials(String username, String password) async {
+    await _storage.write(key: _keyUsername, value: username);
+    await _storage.write(key: _keyPassword, value: password);
+  }
+
+  static Future<Map<String, String?>> getCredentials() async {
+    String? username = await _storage.read(key: _keyUsername);
+    String? password = await _storage.read(key: _keyPassword);
+    return {'username': username, 'password': password};
+  }
+
+  static Future<void> deleteCredentials() async {
+    await _storage.delete(key: _keyUsername);
+    await _storage.delete(key: _keyPassword);
+  }
+}
+
+class ApiClient {
+  static Future<bool> login(String username, String password) async {
+    // Simular autenticação
+    await Future.delayed(Duration(seconds: 2));
+    return username == 'admin' && password == 'admin';
+  }
+}
+
+class HomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('SafeShop'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              AppLocalizations.of(context).getTranslatedValue('welcomeMessage'),
+              style: TextStyle(fontSize: 24.0),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                _verifySite('https://example.com');
+              },
+              child: Text(AppLocalizations.of(context).getTranslatedValue('verifySite')),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _verifySite(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Erro'),
+            content: Text('Não foi possível abrir o site.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+}
+
+class AppLocalizations {
+  final Locale locale;
+
+  AppLocalizations(this.locale);
+
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
+
+  static AppLocalizations of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
+  }
+
+  String getTranslatedValue(String key) {
+    switch (locale.languageCode) {
+      case 'en':
+        return _localizedValuesEn[key] ?? '';
+      case 'pt':
+        return _localizedValuesPtBr[key] ?? '';
+      case 'zh':
+        return _localizedValuesZh[key] ?? '';
+      case 'es':
+        return _localizedValuesEs[key] ?? '';
+      case 'hi':
+        return _localizedValuesHi[key] ?? '';
+      case 'ru':
+        return _localizedValuesRu[key] ?? '';
+      case 'nl':
+        return _localizedValuesNl[key] ?? '';
+      case 'de':
+        return _localizedValuesDe[key] ?? '';
+      case 'fr':
+        return _localizedValuesFr[key] ?? '';
+      case 'it':
+        return _localizedValuesIt[key] ?? '';
+      case 'ja':
+        return _localizedValuesJa[key] ?? '';
+      case 'ko':
+        return _localizedValuesKo[key] ?? '';
+      case 'he':
+        return _localizedValuesHe[key] ?? '';
+      case 'ar':
+        return _localizedValuesAr[key] ?? '';
+      default:
+        return '';
+    }
+  }
+
+  // Traduções para o inglês (EUA)
+  static const Map<String, String> _localizedValuesEn = {
+    'username': 'Username',
+    'password': 'Password',
+    'login': 'Login',
+    'loginError': 'Login Error',
+    'invalidCredentials': 'Invalid username or password',
+    'welcomeMessage': 'Welcome to SafeShop!',
+    'verifySite': 'Verify Site',
+  };
+
+  // Traduções para o português (Brasil)
+  static const Map<String, String> _localizedValuesPtBr = {
+    'username': 'Nome de Usuário',
+    'password': 'Senha',
+    'login': 'Entrar',
+    'loginError': 'Erro ao entrar',
+    'invalidCredentials': 'Nome de usuário ou senha inválidos',
+    'welcomeMessage': 'Bem-vindo ao SafeShop!',
+    'verifySite': 'Verificar Site',
+  };
+
+  // Traduções para o mandarim
+  static const Map<String, String> _localizedValuesZh = {
+    'username': '用户名',
+    'password': '密码',
+    'login': '登录',
+    'loginError': '登录错误',
+    'invalidCredentials': '无效的用户名或密码',
+    'welcomeMessage': '欢迎来到 SafeShop！',
+    'verifySite': '验证网站',
+  };
+
+  // Traduções para o espanhol
+  static const Map<String, String> _localizedValuesEs = {
+    'username': 'Nombre de usuario',
+    'password': 'Contraseña',
+    'login': 'Iniciar sesión',
+    'loginError': 'Error de inicio de sesión',
+    'invalidCredentials': 'Nombre de usuario o contraseña inválidos',
+    'welcomeMessage': '¡Bienvenido a SafeShop!',
+    'verifySite': 'Verificar Sitio',
+  };
+
+  // Traduções para o híndi
+  static const Map<String, String> _localizedValuesHi = {
+    'username': 'उपयोगकर्ता नाम',
+    'password': 'पासवर्ड',
+    'login': 'लॉगिन',
+    'loginError': 'लॉगिन त्रुटि',
+    'invalidCredentials': 'अमान्य उपयोगकर्ता नाम या पासवर्ड',
+    'welcomeMessage': 'SafeShop में आपका स्वागत है!',
+    'verifySite': 'साइट सत्यापित करें',
+  };
+
+  // Traduções para o russo
+  static const Map<String, String> _localizedValuesRu = {
+    'username': 'Имя пользователя',
+    'password': 'Пароль',
+    'login': 'Вход',
+    'loginError': 'Ошибка входа',
+    'invalidCredentials': 'Неверное имя пользователя или пароль',
+    'welcomeMessage': 'Добро пожаловать в SafeShop!',
+    'verifySite': 'Проверить сайт',
+  };
+
+  // Traduções para o holandês
+  static const Map<String, String> _localizedValuesNl = {
+    'username': 'Gebruikersnaam',
+    'password': 'Wachtwoord',
+    'login': 'Inloggen',
+    'loginError': 'Fout bij inloggen',
+    'invalidCredentials': 'Ongeldige gebruikersnaam of wachtwoord',
+    'welcomeMessage': 'Welkom bij SafeShop!',
+    'verifySite': 'Site Verifiëren',
+  };
+
+  // Traduções para o alemão
+  static const Map<String, String> _localizedValuesDe = {
+    'username': 'Benutzername',
+    'password': 'Passwort',
+    'login': 'Anmelden',
+    'loginError': 'Anmeldefehler',
+    'invalidCredentials': 'Ungültiger Benutzername oder Passwort',
+    'welcomeMessage': 'Willkommen bei SafeShop!',
+    'verifySite': 'Website Überprüfen',
+  };
+
+  // Traduções para o francês
+  static const Map<String, String> _localizedValuesFr = {
+    'username': 'Nom d\'utilisateur',
+    'password': 'Mot de passe',
+    'login': 'Connexion',
+    'loginError': 'Erreur de connexion',
+    'invalidCredentials': 'Nom d\'utilisateur ou mot de passe invalide',
+    'welcomeMessage': 'Bienvenue sur SafeShop!',
+    'verifySite': 'Vérifier le Site',
+  };
+
+  // Traduções para o italiano
+  static const Map<String, String> _localizedValuesIt = {
+    'username': 'Nome utente',
+    'password': 'Password',
+    'login': 'Accedi',
+    'loginError': 'Errore di accesso',
+    'invalidCredentials': 'Nome utente o password non validi',
+    'welcomeMessage': 'Benvenuti in SafeShop!',
+    'verifySite': 'Verifica Sito',
+  };
+
+  // Traduções para o japonês
+  static const Map<String, String> _localizedValuesJa = {
+    'username': 'ユーザー名',
+    'password': 'パスワード',
+    'login': 'ログイン',
+    'loginError': 'ログインエラー',
+    'invalidCredentials': '無効なユーザー名またはパスワード',
+    'welcomeMessage': 'SafeShopへようこそ！',
+    'verifySite': 'サイトを確認',
+  };
+
+  // Traduções para o coreano
+  static const Map<String, String> _localizedValuesKo = {
+    'username': '사용자 이름',
+    'password': '비밀번호',
+    'login': '로그인',
+    'loginError': '로그인 오류',
+    'invalidCredentials': '잘못된 사용자 이름 또는 비밀번호',
+    'welcomeMessage': 'SafeShop에 오신 것을 환영합니다!',
+    'verifySite': '사이트 확인',
+  };
+
+  // Traduções para o hebraico
+  static const Map<String, String> _localizedValuesHe = {
+    'username': 'שם משתמש',
+    'password': 'סיסמה',
+    'login': 'התחברות',
+    'loginError': 'שגיאת התחברות',
+    'invalidCredentials': 'שם משתמש או סיסמה לא תקינים',
+    'welcomeMessage': 'ברוך הבא ל- SafeShop!',
+    'verifySite': 'אמת את האתר',
+  };
+
+  // Traduções para o árabe
+  static const Map<String, String> _localizedValuesAr = {
+    'username': 'اسم المستخدم',
+    'password': 'كلمة المرور',
+    'login': 'تسجيل الدخول',
+    'loginError': 'خطأ في تسجيل الدخول',
+    'invalidCredentials': 'اسم المستخدم أو كلمة المرور غير صالحة',
+    'welcomeMessage': 'مرحبًا بك في SafeShop!',
+    'verifySite': 'التحقق من الموقع',
+  };
+}
+
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+  const _AppLocalizationsDelegate();
+
+  @override
+  bool isSupported(Locale locale) {
+    return [
+      'en',
+      'pt',
+      'zh',
+      'es',
+      'hi',
+      'ru',
+      'nl',
+      'de',
+      'fr',
+      'it',
+      'ja',
+      'ko',
+      'he',
+      'ar',
+    ].contains(locale.languageCode);
+  }
+
+  @override
+  Future<AppLocalizations> load(Locale locale) async {
+    return AppLocalizations(locale);
+  }
+
+  @override
+  bool shouldReload(_AppLocalizationsDelegate old) => false;
+}
