@@ -1,0 +1,102 @@
+Blocos de Importação e Configuração Inicial:
+dart
+Copy code
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+Neste bloco, importamos os pacotes necessários para a construção do aplicativo. Isso inclui pacotes para criar interfaces de usuário com o Flutter, localizações para suportar vários idiomas, abrir URLs externas e armazenar informações de forma segura no dispositivo.
+
+Blocos de Classes e Widgets:
+dart
+Copy code
+class SafeShopApp extends StatelessWidget {
+  // ...
+}
+
+class LoginPage extends StatefulWidget {
+  // ...
+}
+
+class _LoginPageState extends State<LoginPage> {
+  // ...
+}
+
+class LoginController {
+  // ...
+}
+
+class SecureStorage {
+  // ...
+}
+
+class ApiClient {
+  // ...
+}
+
+class HomePage extends StatelessWidget {
+  // ...
+}
+
+class AppLocalizations {
+  // ...
+}
+
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+  // ...
+}
+Aqui, declaramos todas as classes e widgets necessários para construir o aplicativo. Isso inclui a aplicação principal (SafeShopApp), a página de login (LoginPage), o controlador de login (LoginController), métodos para armazenamento seguro (SecureStorage), a comunicação com a API (ApiClient), a página inicial (HomePage), e a classe para lidar com localizações (AppLocalizations) e seu delegado.
+
+Blocos de Lógica de Negócios e Funcionalidades:
+dart
+Copy code
+void main() {
+  runApp(SafeShopApp());
+}
+
+class LoginController {
+  // ...
+}
+
+class SecureStorage {
+  // ...
+}
+
+class ApiClient {
+  // ...
+}
+Estes são os blocos onde a lógica de negócios do aplicativo é implementada. Aqui, temos o ponto de entrada do aplicativo, onde a aplicação principal (SafeShopApp) é iniciada. Além disso, temos a lógica para controlar o login do usuário (LoginController), armazenar credenciais de forma segura (SecureStorage), e realizar chamadas à API (ApiClient).
+
+Blocos de Interface de Usuário (UI):
+dart
+Copy code
+class LoginPage extends StatefulWidget {
+  // ...
+}
+
+class _LoginPageState extends State<LoginPage> {
+  // ...
+}
+
+class HomePage extends StatelessWidget {
+  // ...
+}
+Estes blocos contêm a implementação da interface de usuário do aplicativo. Aqui, definimos a página de login (LoginPage) e sua lógica de estado, bem como a página inicial (HomePage), que é exibida após o login bem-sucedido.
+
+Blocos de Localização e Internacionalização:
+dart
+Copy code
+class AppLocalizations {
+  // ...
+}
+
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+  // ...
+}
+Estes blocos são responsáveis pela internacionalização e localização do aplicativo. Aqui, definimos as traduções para diferentes idiomas e configuramos o delegado para lidar com as localizações no aplicativo.
+
+Esses são os blocos principais que compõem o aplicativo SafeShop, cada um representando uma parte importante da sua estrutura e funcionalidade.
+
+
+
+
