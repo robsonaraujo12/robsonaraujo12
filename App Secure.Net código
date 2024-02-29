@@ -1,0 +1,108 @@
+import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:scikit_learn/scikit_learn.dart' as sk;
+import 'package:networkx/networkx.dart' as nx;
+import 'package:nltk/nltk.dart' as nltk;
+
+void main() {
+  runApp(SecureNetApp());
+}
+
+class SecureNetApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Secure.Net',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: SecureNetHomePage(),
+    );
+  }
+}
+
+class SecureNetHomePage extends StatefulWidget {
+  @override
+  _SecureNetHomePageState createState() => _SecureNetHomePageState();
+}
+
+class _SecureNetHomePageState extends State<SecureNetHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Secure.Net'),
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Detecção Automática de Fraudes',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16),
+            Text(
+              'O Secure.Net utiliza algoritmos de aprendizado de máquina para realizar varreduras automáticas na internet em busca de sites suspeitos, anúncios fraudulentos e atividades de phishing. Esses algoritmos são treinados com grandes volumes de dados para identificar padrões e sinais de atividade maliciosa.',
+            ),
+            SizedBox(height: 24),
+            Text(
+              'Análise de Conteúdo',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16),
+            Text(
+              'A análise de conteúdo do Secure.Net é baseada em técnicas avançadas de análise de dados. Ele examina o conteúdo dos sites e anúncios em busca de indicadores de fraude, como linguagem enganosa, promessas irreais e solicitações de informações confidenciais. Essa análise é realizada em tempo real para fornecer alertas imediatos aos usuários.',
+            ),
+            SizedBox(height: 24),
+            Text(
+              'Verificação de Credibilidade',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Para verificar a credibilidade dos sites e anunciantes, o Secure.Net utiliza fontes de dados confiáveis, como certificados de segurança, registros de domínio e feedback da comunidade de usuários. Ele também verifica a autenticidade das informações de contato e revisa a reputação dos vendedores por meio de integrações com plataformas de análise de reputação.',
+            ),
+            SizedBox(height: 24),
+            Text(
+              'Alertas e Notificações',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Quando o Secure.Net detecta um site ou anúncio suspeito, ele emite alertas imediatos aos usuários por meio de notificações push. Os alertas fornecem informações detalhadas sobre o motivo da suspeita e oferecem orientações sobre como proceder com segurança. Os usuários também podem personalizar suas configurações de alerta de acordo com suas preferências.',
+            ),
+            SizedBox(height: 24),
+            Text(
+              'Feedback da Comunidade',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16),
+            Text(
+              'O Secure.Net permite que os usuários forneçam feedback sobre sites e anúncios por meio de um sistema de relatórios integrado. Os relatórios de usuários são analisados pela equipe do Secure.Net, que os utiliza para melhorar continuamente os algoritmos de detecção de fraudes e fornecer atualizações de segurança em tempo real.',
+            ),
+            SizedBox(height: 24),
+            Text(
+              'Lista Negra de Sites',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Além da análise em tempo real, o Secure.Net mantém uma lista negra de sites conhecidos por atividades fraudulentas. Esses sites são bloqueados automaticamente pelo aplicativo, e os usuários são alertados sempre que tentam acessá-los. A lista negra é atualizada regularmente com base em informações de segurança atualizadas.',
+            ),
+            SizedBox(height: 24),
+            Text(
+              'Configurações Personalizadas',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Os usuários podem personalizar suas configurações de segurança de acordo com suas preferências individuais. Isso inclui opções para ajustar o nível de sensibilidade dos alertas, escolher quais tipos de sites e anúncios devem ser verificados e gerenciar a lista de sites confiáveis. As configurações podem ser facilmente acessadas e modificadas a qualquer momento.',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
