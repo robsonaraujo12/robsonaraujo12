@@ -1,0 +1,268 @@
+import random
+import spacy
+from phue import Bridge  # Biblioteca para integração com lâmpadas Philips Hue
+from miio import AirConditioningCompanion
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+import speech_recognition as sr
+import tkinter as tk
+import requests
+import openai
+
+# Configurar a chave da API da OpenAI
+openai.api_key = "SUA_CHAVE_DE_API_DA_OPENAI"
+
+# Carregar o modelo de linguagem do spaCy
+nlp = spacy.load("pt_core_news_sm")
+
+# Variáveis para armazenar informações específicas dos dispositivos
+codigo_fechadura = "seu_codigo_de_abertura_de_fechadura"
+codigo_portao = "seu_codigo_de_abertura_de_portao"
+dispositivo_fechadura_id = "id_do_dispositivo_de_fechadura"
+dispositivo_portao_id = "id_do_dispositivo_de_portao"
+token_autenticacao = "seu_token_de_autenticacao"
+
+# Dicionário de respostas do assistente
+respostas = {
+    "Olá": ["Olá! Como posso ajudar você?", "Oi, como posso ser útil?"],
+    "Ligar Luz": ["Ligando as luzes da sala.", "Ok, as luzes estão acesas."],
+    "Desligar Luz": ["Desligando as luzes da sala.", "Feito, as luzes foram apagadas."],
+    "Aumentar Temperatura": ["Aumentando a temperatura.", "Pronto, temperatura aumentada."],
+    "Diminuir Temperatura": ["Diminuindo a temperatura.", "Ok, temperatura reduzida."],
+    "Reproduzir Música": ["Reproduzindo música.", "Música tocando."],
+    "Parar Música": ["Parando música.", "Música pausada."]
+}
+
+def autenticar_usuario(token):
+    """
+    Função para autenticar o usuário antes de permitir o controle dos dispositivos.
+    """
+    # Verifica se o token é válido
+    if token == "SEU_TOKEN_DE_AUTENTICACAO":
+        return True
+    else:
+        return False
+
+def criptografar_dados(dados):
+    """
+    Função para criptografar os dados antes de transmiti-los.
+    """
+    # Neste exemplo, apenas retorna os dados, assumindo que já estão sendo transmitidos de forma segura
+    return dados
+
+def verificar_atualizacoes():
+    """
+    Função para verificar se há atualizações de firmware ou software para os dispositivos.
+    """
+    # Lógica para verificar atualizações
+    atualizacoes_disponiveis = False  # Exemplo: assume que não há atualizações disponíveis
+
+    if atualizacoes_disponiveis:
+        print("Há atualizações disponíveis para seus dispositivos. Por favor, atualize.")
+    else:
+        print("Seus dispositivos estão atualizados.")
+
+def verificar_permissoes(usuario, acao):
+    """
+    Função para verificar se o usuário possui permissões adequadas para executar uma determinada ação.
+    """
+    # Lógica para verificar as permissões do usuário
+    if usuario == "admin" and acao in ["abrir_fechadura", "fechar_fechadura", "abrir_portao", "fechar_portao", 
+                                       "acionar_alarme_portao", "acionar_alarme_porta", "ligar_camera", 
+                                       "desligar_camera", "verificar_camera", "ativar_cerca_eletrica", 
+                                       "desativar_cerca_eletrica", "verificar_sensores_movimento"]:
+        return True
+    else:
+        return False
+
+def registrar_atividade(usuario, acao):
+    """
+    Função para registrar atividades do usuário.
+    """
+    # Lógica para registrar atividades
+    print(f"Atividade registrada: Usuário '{usuario}' executou a ação '{acao}'.")
+
+def minimizar_coleta_dados():
+    """
+    Função para minimizar a coleta de informações pessoais.
+    """
+    # Neste exemplo, não estamos coletando informações pessoais
+    print("Nenhuma informação pessoal está sendo coletada.")
+
+def realizar_auditoria_seguranca():
+    """
+    Função para realizar auditorias de segurança periódicas.
+    """
+    # Lógica para realizar auditorias de segurança
+    print("Auditoria de segurança realizada com sucesso.")
+
+def reconhecimento_voz():
+    """
+    Função para integrar reconhecimento de voz ao assistente virtual.
+    """
+    # Cria um objeto de reconhecimento de voz
+    recognizer = sr.Recognizer()
+
+    # Usa o microfone do sistema como fonte de áudio
+    with sr.Microphone() as source:
+        print("Diga algo...")
+        audio = recognizer.listen(source)
+
+    try:
+        # Usa o reconhecimento de voz do Google para converter o áudio em texto
+        pergunta = recognizer.recognize_google(audio, language="pt-BR")
+        print("Você disse:", pergunta)
+        return pergunta
+    except sr.UnknownValueError:
+        print("Desculpe, não consegui entender o áudio.")
+        return ""
+    except sr.RequestError as e:
+        print("Erro ao solicitar resultados do serviço de reconhecimento de voz; {0}".format(e))
+        return ""
+
+def assistente_virtual(pergunta):
+    """
+    Função para responder às perguntas do usuário.
+    """
+    try:
+        # Gerar uma resposta inteligente usando a API da OpenAI
+        resposta = openai.Completion.create(
+            engine="text-davinci-002",
+            prompt=pergunta,
+            max_tokens=50
+        )
+        return resposta.choices[0].text.strip()
+    except Exception as e:
+        print("Erro ao gerar resposta da IA:", e)
+        return "Desculpe, não entendi. Você pode repetir?"
+
+def abrir_fechadura():
+    """
+    Função para abrir a fechadura.
+    """
+    # Lógica para abrir a fechadura
+    print("Fechadura aberta.")
+
+def fechar_fechadura():
+    """
+    Função para fechar a fechadura.
+    """
+    # Lógica para fechar a fechadura
+    print("Fechadura fechada.")
+
+def abrir_portao():
+    """
+    Função para abrir o portão.
+    """
+    # Lógica para abrir o portão
+    print("Portão aberto.")
+
+def fechar_portao():
+    """
+    Função para fechar o portão.
+    """
+    # Lógica para fechar o portão
+    print("Portão fechado.")
+
+def acionar_alarme_portao():
+    """
+    Função para acionar o alarme do portão.
+    """
+    # Lógica para acionar o alarme do portão
+    print("Alarme do portão acionado.")
+
+def acionar_alarme_porta():
+    """
+    Função para acionar o alarme da porta.
+    """
+    # Lógica para acionar o alarme da porta
+    print("Alarme da porta acionado.")
+
+def ligar_camera():
+    """
+    Função para ligar a câmera de vigilância.
+    """
+    # Lógica para ligar a câmera de vigilância
+    print("Câmera ligada.")
+
+def desligar_camera():
+    """
+    Função para desligar a câmera de vigilância.
+    """
+    # Lógica para desligar a câmera de vigilância
+    print("Câmera desligada.")
+
+def verificar_camera():
+    """
+    Função para verificar o status da câmera de vigilância.
+    """
+    # Lógica para verificar o status da câmera de vigilância
+    print("Status da câmera: Ativa" if random.choice([True, False]) else "Status da câmera: Desligada")
+
+def ativar_cerca_eletrica():
+    """
+    Função para ativar a cerca elétrica.
+    """
+    # Lógica para ativar a cerca elétrica
+    print("Cerca elétrica ativada.")
+
+def desativar_cerca_eletrica():
+    """
+    Função para desativar a cerca elétrica.
+    """
+    # Lógica para desativar a cerca elétrica
+    print("Cerca elétrica desativada.")
+
+def verificar_sensores_movimento():
+    """
+    Função para verificar os sensores de movimento.
+    """
+    # Lógica para verificar os sensores de movimento
+    print("Sensores de movimento detectaram atividade." if random.choice([True, False]) else "Nenhuma atividade detectada.")
+
+def casa_controle_IA(usuario, acao, token):
+    """
+    Função principal para casa_controle_IA, que verifica autenticação, controle de acesso e executa ação solicitada.
+    """
+    # Verificar autenticação do usuário
+    if autenticar_usuario(token):
+        # Verificar permissões de acesso
+        if verificar_permissoes(usuario, acao):
+            # Executar ação solicitada
+            if acao == "abrir_fechadura":
+                abrir_fechadura()
+            elif acao == "fechar_fechadura":
+                fechar_fechadura()
+            elif acao == "abrir_portao":
+                abrir_portao()
+            elif acao == "fechar_portao":
+                fechar_portao()
+            elif acao == "acionar_alarme_portao":
+                acionar_alarme_portao()
+            elif acao == "acionar_alarme_porta":
+                acionar_alarme_porta()
+            elif acao == "ligar_camera":
+                ligar_camera()
+            elif acao == "desligar_camera":
+                desligar_camera()
+            elif acao == "verificar_camera":
+                verificar_camera()
+            elif acao == "ativar_cerca_eletrica":
+                ativar_cerca_eletrica()
+            elif acao == "desativar_cerca_eletrica":
+                desativar_cerca_eletrica()
+            elif acao == "verificar_sensores_movimento":
+                verificar_sensores_movimento()
+            else:
+                print("Ação não reconhecida.")
+        else:
+            print("Usuário não possui permissões adequadas para executar esta ação.")
+    else:
+        print("Falha na autenticação. Token inválido.")
+
+# Exemplo de uso da função de casa_controle_IA
+usuario = "admin"
+acao = "ativar_cerca_eletrica"
+token = "SEU_TOKEN_DE_AUTENTICACAO"
+
+casa_controle_IA(usuario, acao, token)
